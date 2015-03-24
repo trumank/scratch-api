@@ -4,6 +4,7 @@ var util = require('util');
 var events = require('events');
 
 var SERVER = 'scratch.mit.edu';
+var PROJECTS_SERVER = 'projects.scratch.mit.edu';
 var CLOUD = 'cloud.scratch.mit.edu';
 var CLOUD_PORT = 531;
 
@@ -20,7 +21,7 @@ function request(options, cb) {
   if (options.body) headers['Content-Length'] = options.body.length;
   if (options.sessionId) headers['Cookie'] += 'scratchsessionsid=' + options.sessionId + ';';
   var request = http.request({
-    hostname: SERVER,
+    hostname: options.hostname || SERVER,
     port: 80,
     path: options.path,
     method: options.method || 'GET',
@@ -74,6 +75,23 @@ Scratch.UserSession = function(username, id, sessionId) {
   this.username = username;
   this.id = id;
   this.sessionId = sessionId;
+};
+Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
+  var self = this;
+  request({
+    hostname: PROJECTS_SERVER,
+    path: '/internalapi/project/' + projectId + '/set/',
+    method: 'POST',
+    body: JSON.stringify(payload),
+    sessionId: this.sessionId
+  }, function(err, body, response) {
+    if (err) return cb(err);
+    try {
+      cb(null, JSON.parse(body));
+    } catch (e) {
+      cb(e);
+    }
+  });
 };
 Scratch.UserSession.prototype.cloud = function(projectId, cb) {
   var self = this;
