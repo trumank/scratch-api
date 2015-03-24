@@ -37,17 +37,17 @@ function request(options, cb) {
 };
 
 function parseCookie(cookie) {
-    var cookies = {};
-    var each = cookie.split(';');
-    var i = each.length;
-    while (i--) {
-        if (each[i].indexOf('=') === -1) {
-            continue;
-        }
-        var pair = each[i].split('=');
-        cookies[pair[0].trim()] = pair[1].trim();
+  var cookies = {};
+  var each = cookie.split(';');
+  var i = each.length;
+  while (i--) {
+    if (each[i].indexOf('=') === -1) {
+      continue;
     }
-    return cookies;
+    var pair = each[i].split('=');
+    cookies[pair[0].trim()] = pair[1].trim();
+  }
+  return cookies;
 }
 
 var Scratch = {};
