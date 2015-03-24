@@ -1,0 +1,19 @@
+{
+  "name": "scratch-api",
+  "version": "1.0.0",
+  "description": "An API to interact with the Scratch 2.0 website",
+  "main": "scratchapi.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:trumank/scratch-api.git"
+  },
+  "author": "Truman Kilen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/trumank/scratch-api/issues"
+  },
+  "homepage": "https://github.com/trumank/scratch-api"
+}
