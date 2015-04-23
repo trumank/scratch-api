@@ -175,7 +175,7 @@ Scratch.CloudSession.prototype.connect = function(cb) {
     host: CLOUD,
     port: CLOUD_PORT
   }, function() {
-    self.sendHandshake();
+    self._sendHandshake();
     cb();
   });
   this.connection.setEncoding('utf8');
@@ -198,7 +198,7 @@ Scratch.CloudSession.prototype.connect = function(cb) {
         console.warn('Invalid packet %s', line);
         return;
       }
-      self.handlePacket(packet);
+      self._handlePacket(packet);
     }
     stream = packets[packets.length - 1];
   });
@@ -206,7 +206,7 @@ Scratch.CloudSession.prototype.connect = function(cb) {
 Scratch.CloudSession.prototype.end = function() {
   this.connection.end();
 };
-Scratch.CloudSession.prototype.handlePacket = function(packet) {
+Scratch.CloudSession.prototype._handlePacket = function(packet) {
   switch (packet.method) {
     case 'set':
       if (!({}).hasOwnProperty.call(this.variables, packet.name)) {
@@ -214,22 +214,21 @@ Scratch.CloudSession.prototype.handlePacket = function(packet) {
       }
       this._variables[packet.name] = packet.value;
       this.emit('set', packet.name, packet.value);
-      this.emit(packet.name, packet.value);
       break;
     default:
       console.warn('Unimplemented packet', packet.method);
   }
 };
-Scratch.CloudSession.prototype.sendHandshake = function() {
-  this.send('handshake', {});
+Scratch.CloudSession.prototype._sendHandshake = function() {
+  this._send('handshake', {});
 };
-Scratch.CloudSession.prototype.sendSet = function(name, value) {
-  this.send('set', {
+Scratch.CloudSession.prototype._sendSet = function(name, value) {
+  this._send('set', {
     name: name,
     value: value
   });
 };
-Scratch.CloudSession.prototype.send = function(method, options) {
+Scratch.CloudSession.prototype._send = function(method, options) {
   var object = {
     token: this.cloudId,
     token2: this.hash,
@@ -246,7 +245,7 @@ Scratch.CloudSession.prototype.send = function(method, options) {
   md5.update(this.hash);
   this.hash = md5.digest('hex');
 };
-Scratch.CloudSession.prototype.addVariable = function(name, value) {
+Scratch.CloudSession.prototype._addVariable = function(name, value) {
   var self = this;
   this._variables[name] = value;
   Object.defineProperty(this.variables, name, {
@@ -255,7 +254,7 @@ Scratch.CloudSession.prototype.addVariable = function(name, value) {
     },
     set: function(value) {
       self._variables[name] = value;
-      self.sendSet(name, value);
+      self._sendSet(name, value);
     }
   });
 };
