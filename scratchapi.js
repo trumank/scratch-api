@@ -206,11 +206,18 @@ Scratch.CloudSession.prototype.connect = function(cb) {
 Scratch.CloudSession.prototype.end = function() {
   this.connection.end();
 };
+Scratch.CloudSession.prototype.get = function(name) {
+  return this._variables[name];
+};
+Scratch.CloudSession.prototype.set = function(name, value) {
+  this._variables[name] = value;
+  this._sendSet(name, value);
+};
 Scratch.CloudSession.prototype._handlePacket = function(packet) {
   switch (packet.method) {
     case 'set':
       if (!({}).hasOwnProperty.call(this.variables, packet.name)) {
-        this.addVariable(packet.name, packet.value)
+        this._addVariable(packet.name, packet.value)
       }
       this._variables[packet.name] = packet.value;
       this.emit('set', packet.name, packet.value);
@@ -250,11 +257,10 @@ Scratch.CloudSession.prototype._addVariable = function(name, value) {
   this._variables[name] = value;
   Object.defineProperty(this.variables, name, {
     get: function() {
-      return self._variables;
+      return self.get(name);
     },
     set: function(value) {
-      self._variables[name] = value;
-      self._sendSet(name, value);
+      self.set(name, value);
     }
   });
 };
