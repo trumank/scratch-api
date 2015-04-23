@@ -110,7 +110,7 @@ __Arguments__
 * `callback(err, payload)` - A callback that is called with the returned backpack object or an error if one occurs.
 
 <a name="UserSession.setBackpack"/>
-###Scratch.UserSession.setBackpack(payload, callback)
+### Scratch.UserSession.setBackpack(payload, callback)
 
 Uploads the given payload to the user's backpack.
 
@@ -119,7 +119,7 @@ __Arguments__
 * `callback(err)` - A callback that is called when the request finishes or an error occurs.
 
 <a name="UserSession.cloud"/>
-###Scratch.UserSession.cloud(projectId, callback)
+### Scratch.UserSession.cloud(projectId, callback)
 
 Connects to a cloud variable session for the given project.
 
