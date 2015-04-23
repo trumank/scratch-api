@@ -74,18 +74,34 @@ Scratch.createUserSession = function(username, password, cb) {
   });
 };
 
+Scratch.getProject = function(projectId, cb) {
+  request({
+    hostname: PROJECTS_SERVER,
+    path: '/internalapi/project/' + projectId + '/get/',
+    method: 'GET'
+  }, function(err, body, response) {
+    if (err) return cb(err);
+    try {
+      cb(null, JSON.parse(body));
+    } catch (e) {
+      cb(e);
+    }
+  });
+}
+
 Scratch.UserSession = function(username, id, sessionId) {
   this.username = username;
   this.id = id;
   this.sessionId = sessionId;
 };
+Scratch.UserSession.prototype.getProject = Scratch.getProject;
 Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
-  var self = this;
+  if (typeof payload !== 'string') payload = JSON.stringify(payload);
   request({
     hostname: PROJECTS_SERVER,
     path: '/internalapi/project/' + projectId + '/set/',
     method: 'POST',
-    body: JSON.stringify(payload),
+    body: payload,
     sessionId: this.sessionId
   }, function(err, body, response) {
     if (err) return cb(err);
