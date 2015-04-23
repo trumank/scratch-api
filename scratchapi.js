@@ -7,12 +7,13 @@ var fs = require('fs');
 
 var SERVER = 'scratch.mit.edu';
 var PROJECTS_SERVER = 'projects.scratch.mit.edu';
+var CDN_SERVER = 'cdn.scratch.mit.edu';
 var CLOUD = 'cloud.scratch.mit.edu';
 var CLOUD_PORT = 531;
 
 function request(options, cb) {
   var headers = {
-    'Cookie': 'scratchcsrftoken=a;',
+    'Cookie': 'scratchcsrftoken=a; scratchlanguage=en;',
     'X-CSRFToken': 'a',
     'referer': 'https://scratch.mit.edu' // Required by Scratch servers
   };
@@ -100,6 +101,38 @@ Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
   request({
     hostname: PROJECTS_SERVER,
     path: '/internalapi/project/' + projectId + '/set/',
+    method: 'POST',
+    body: payload,
+    sessionId: this.sessionId
+  }, function(err, body, response) {
+    if (err) return cb(err);
+    try {
+      cb(null, JSON.parse(body));
+    } catch (e) {
+      cb(e);
+    }
+  });
+};
+Scratch.UserSession.prototype.getBackpack = function(cb) {
+  request({
+    hostname: SERVER,
+    path: '/internalapi/backpack/' + this.username + '/get/',
+    method: 'GET',
+    sessionId: this.sessionId
+  }, function(err, body, response) {
+    if (err) return cb(err);
+    try {
+      cb(null, JSON.parse(body));
+    } catch (e) {
+      cb(e);
+    }
+  });
+};
+Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
+  if (typeof payload !== 'string') payload = JSON.stringify(payload);
+  request({
+    hostname: CDN_SERVER,
+    path: '/internalapi/backpack/' + this.username + '/set/',
     method: 'POST',
     body: payload,
     sessionId: this.sessionId
