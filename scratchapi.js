@@ -3,7 +3,6 @@ var net = require('net');
 var util = require('util');
 var events = require('events');
 var crypto = require('crypto');
-var fs = require('fs');
 
 var SERVER = 'scratch.mit.edu';
 var PROJECTS_SERVER = 'projects.scratch.mit.edu';
@@ -24,7 +23,7 @@ function request(options, cb) {
   }
   if (options.body) headers['Content-Length'] = options.body.length;
   if (options.sessionId) headers['Cookie'] += 'scratchsessionsid=' + options.sessionId + ';';
-  var request = https.request({
+  var req = https.request({
     hostname: options.hostname || SERVER,
     port: 443,
     path: options.path,
@@ -35,10 +34,10 @@ function request(options, cb) {
     response.on('data', function(chunk) { parts.push(chunk); });
     response.on('end', function() { cb(null, Buffer.concat(parts).toString(), response); });
   });
-  request.on('error', cb);
+  req.on('error', cb);
   if (options.body) request.write(options.body);
-  request.end();
-};
+  req.end();
+}
 
 function parseCookie(cookie) {
   var cookies = {};
@@ -88,7 +87,7 @@ Scratch.getProject = function(projectId, cb) {
       cb(e);
     }
   });
-}
+};
 
 Scratch.UserSession = function(username, id, sessionId) {
   this.username = username;
@@ -187,7 +186,6 @@ Scratch.CloudSession.prototype.connect = function(cb) {
   var stream = '';
   this.connection.on('data', function(chunk) {
     stream += chunk;
-    var next;
     var packets = stream.split('\n');
     for(var i = 0; i < packets.length - 1; i++) {
       var line = packets[i];
@@ -217,7 +215,7 @@ Scratch.CloudSession.prototype._handlePacket = function(packet) {
   switch (packet.method) {
     case 'set':
       if (!({}).hasOwnProperty.call(this.variables, packet.name)) {
-        this._addVariable(packet.name, packet.value)
+        this._addVariable(packet.name, packet.value);
       }
       this._variables[packet.name] = packet.value;
       this.emit('set', packet.name, packet.value);
