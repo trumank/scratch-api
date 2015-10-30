@@ -254,6 +254,7 @@ Scratch.CloudSession.prototype._addVariable = function(name, value) {
   var self = this;
   this._variables[name] = value;
   Object.defineProperty(this.variables, name, {
+    enumerable: true,
     get: function() {
       return self.get(name);
     },
