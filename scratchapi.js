@@ -35,7 +35,7 @@ function request(options, cb) {
     response.on('end', function() { cb(null, Buffer.concat(parts).toString(), response); });
   });
   req.on('error', cb);
-  if (options.body) request.write(options.body);
+  if (options.body) req.write(options.body);
   req.end();
 }
 
