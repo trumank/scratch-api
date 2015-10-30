@@ -35,18 +35,20 @@ Scratch.createUserSession(username, password, function(err, user) {
 ## API
 
 ### Scratch
-* [`createUserSession`](#createUserSession)
 * [`getProject`](#getProject)
 
 ### Scratch.UserSession
+* [`static create`](#UserSession.create)
+* [`static prompt`](#UserSession.prompt)
+* [`static load`](#UserSession.load)
+* [`verify`](#UserSession.verify)
 * [`getProject`](#UserSession.getProject)
 * [`setProject`](#UserSession.setProject)
 * [`getBackpack`](#UserSession.getBackpack)
 * [`setBackpack`](#UserSession.setBackpack)
-* [`cloud`](#UserSession.cloud)
+* [`cloudSession`](#UserSession.cloudSession)
 
 ### Scratch.CloudSession
-* [`connect`](#CloudSession.connect)
 * [`end`](#CloudSession.end)
 * [`get`](#CloudSession.get)
 * [`set`](#CloudSession.set)
@@ -56,24 +58,45 @@ Scratch.createUserSession(username, password, function(err, user) {
 
 ## Scratch
 
-<a name="createUserSession"></a>
-### static createUserSession(username, password, callback)
-
-Created a new Scratch session by signing in with the given username and password.
-
-* `username` - The Scratch account username (not case sensitive).
-* `password` - The Scratch account password.
-* `callback(err, user)` - A callback that is called with the resulting user or an error if one occurs.
-
 <a name="getProject"></a>
 ### static getProject(projectId, callback)
 
 Retrieves a JSON object of the given Scratch project. Equivalent to Scratch.UserSession.getProject but does not require being signed in.
 
 * `projectId` - The project's ID.
-* `callback(err, project)` - A callback that is called with the resulting project or an error if one occurs.
+* `callback(err, project)`
 
 ## UserSession
+
+<a name="UserSession.create"></a>
+### static create(username, password, callback)
+
+Creates a new Scratch session by signing in with the given username and password.
+
+* `username` - The Scratch account username (not case sensitive).
+* `password` - The Scratch account password.
+* `callback(err, user)`
+
+<a name="UserSession.prompt"></a>
+### static prompt(callback)
+
+Creates a new Scratch session by prompting for the username and password via the command line.
+
+* `callback(err, user)`
+
+<a name="UserSession.load"></a>
+### static load(callback)
+
+Attempts to create a user from a saved .scratchSession file. If one is not found, [`prompt`](#UserSession.prompt) is used instead and a .scratchSession file is created.
+
+* `callback(err, user)`
+
+<a name="UserSession.verify"></a>
+### verify(callback)
+
+Verifies that the user session is fresh and is ready to be used.
+
+* `callback(err, valid)`
 
 <a name="UserSession.getProject"></a>
 ### getProject(projectId, callback)
@@ -81,7 +104,7 @@ Retrieves a JSON object of the given Scratch project. Equivalent to Scratch.User
 Retrieves a JSON object of the given Scratch project.
 
 * `projectId` - The project's ID.
-* `callback(err, project)` - A callback that is called with the resulting project or an error if one occurs.
+* `callback(err, project)`
 
 <a name="UserSession.setProject"></a>
 ### setProject(projectId, payload, callback)
@@ -90,14 +113,14 @@ Uploads the given payload object or string to the project with the given ID. The
 
 * `projectId` - The project's ID.
 * `payload` - A JSON object or string. If it is an object, it will be stringified before sent.
-* `callback(err)` - A callback that is called when it finishes and or an error occurs.
+* `callback(err)`
 
 <a name="UserSession.getBackpack"></a>
 ### getBackpack(callback)
 
 Retrieves the signed in user's backpack as a JSON object.
 
-* `callback(err, payload)` - A callback that is called with the returned backpack object or an error if one occurs.
+* `callback(err, payload)`
 
 <a name="UserSession.setBackpack"></a>
 ### setBackpack(payload, callback)
@@ -105,24 +128,17 @@ Retrieves the signed in user's backpack as a JSON object.
 Uploads the given payload to the user's backpack.
 
 * `payload` - A JSON object or a string to be uploaded.
-* `callback(err)` - A callback that is called when the request finishes or an error occurs.
+* `callback(err)`
 
-<a name="UserSession.cloud"></a>
-### cloud(projectId, callback)
+<a name="UserSession.cloudSession"></a>
+### cloudSession(projectId, callback)
 
 Connects to a cloud variable session for the given project.
 
 * `projectId` - The project's ID.
-* `callback(err, cloudSession)` - A callback that is called with the returned CloudSession object or if an error occurs.
+* `callback(err, cloudSession)`
 
 ## Scratch.CloudSession
-
-<a name="CloudSession.connect"></a>
-### connect(callback)
-
-Used to start a newly created CloudSession.
-
-* `callback` - A callback that is called when a connection is made or an error occurs.
 
 <a name="CloudSession.end"></a>
 ### end()

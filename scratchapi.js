@@ -3,12 +3,15 @@ var net = require('net');
 var util = require('util');
 var events = require('events');
 var crypto = require('crypto');
+var fs = require('fs');
 
 var SERVER = 'scratch.mit.edu';
 var PROJECTS_SERVER = 'projects.scratch.mit.edu';
 var CDN_SERVER = 'cdn.scratch.mit.edu';
 var CLOUD = 'cloud.scratch.mit.edu';
 var CLOUD_PORT = 531;
+
+var SESSION_FILE = '.scratchSession';
 
 function request(options, cb) {
   var headers = {
@@ -55,25 +58,6 @@ function parseCookie(cookie) {
 
 var Scratch = {};
 
-Scratch.createUserSession = function(username, password, cb) {
-  request({
-    path: '/login/',
-    method: 'POST',
-    body: JSON.stringify({username: username, password: password}),
-    headers: {'X-Requested-With': 'XMLHttpRequest'}
-  }, function(err, body, response) {
-    if (err) return cb(err);
-    try {
-      var user = JSON.parse(body)[0];
-      if (user.msg) return cb(new Error(user.msg));
-      var sessionId = parseCookie(response.headers['set-cookie'][0]).scratchsessionsid;
-      cb(null, new Scratch.UserSession(user.username, user.id, sessionId));
-    } catch (e) {
-      cb(e);
-    }
-  });
-};
-
 Scratch.getProject = function(projectId, cb) {
   request({
     hostname: PROJECTS_SERVER,
@@ -93,6 +77,69 @@ Scratch.UserSession = function(username, id, sessionId) {
   this.username = username;
   this.id = id;
   this.sessionId = sessionId;
+};
+Scratch.UserSession.create = function(username, password, cb) {
+  request({
+    path: '/login/',
+    method: 'POST',
+    body: JSON.stringify({username: username, password: password}),
+    headers: {'X-Requested-With': 'XMLHttpRequest'}
+  }, function(err, body, response) {
+    if (err) return cb(err);
+    try {
+      var user = JSON.parse(body)[0];
+      if (user.msg) return cb(new Error(user.msg));
+      cb(null, new Scratch.UserSession(user.username, user.id, parseCookie(response.headers['set-cookie'][0]).scratchsessionsid));
+    } catch (e) {
+      cb(e);
+    }
+  });
+};
+Scratch.UserSession.prompt = function(cb) {
+  var prompt = require('prompt');
+  prompt.start();
+  prompt.get([
+    { name: 'username' },
+    { name: 'password', hidden: true }
+  ], function(err, results) {
+    if (err) return cb(err);
+    Scratch.UserSession.create(results.username, results.password, cb);
+  });
+};
+Scratch.UserSession.load = function(cb) {
+  function prompt() {
+    Scratch.UserSession.prompt(function(err, session) {
+      if (err) return cb(err);
+      session._saveSession(function() {
+        cb(null, session);
+      });
+    });
+  }
+  fs.readFile(SESSION_FILE, function(err, data) {
+    if (err) return prompt();
+    var obj = JSON.parse(data.toString());
+    var session = new Scratch.UserSession(obj.username, obj.id, obj.sessionId);
+    session.verify(function(err, valid) {
+      if (err) return cb(err);
+      if (valid) return cb(null, session);
+      prompt();
+    });
+  });
+};
+Scratch.UserSession.prototype._saveSession = function(cb) {
+  fs.writeFile(SESSION_FILE, JSON.stringify({
+    username: this.username,
+    id: this.id,
+    sessionId: this.sessionId
+  }), cb);
+};
+Scratch.UserSession.prototype.verify = function(cb) {
+  request({
+    path: '/messages/ajax/get-message-count/', // probably going to change quite soon
+    sessionId: this.sessionId
+  }, function(err, body, response) {
+    cb(null, !err && response.statusCode === 200);
+  });
 };
 Scratch.UserSession.prototype.getProject = Scratch.getProject;
 Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
@@ -144,7 +191,7 @@ Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
     }
   });
 };
-Scratch.UserSession.prototype.cloud = function(projectId, cb) {
+Scratch.UserSession.prototype.cloudSession = function(projectId, cb) {
   var self = this;
   request({
     path: '/projects/' + projectId + '/cloud-data.js',
@@ -152,7 +199,7 @@ Scratch.UserSession.prototype.cloud = function(projectId, cb) {
     sessionId: this.sessionId
   }, function(err, body, response) {
     if (err) return cb(err);
-    cb(null, new Scratch.CloudSession(self, projectId, body.substr(1495, 36)));
+    Scratch.CloudSession._create(self, projectId, body.substr(1495, 36), cb);
   });
 };
 
@@ -168,7 +215,14 @@ Scratch.CloudSession = function(user, projectId, cloudId) {
   this._variables = Object.create(null);
 };
 util.inherits(Scratch.CloudSession, events.EventEmitter);
-Scratch.CloudSession.prototype.connect = function(cb) {
+Scratch.CloudSession._create = function(user, projectId, cloudId, cb) {
+  var session = new Scratch.CloudSession(user, projectId, cloudId);
+  session._connect(function(err) {
+    if (err) return cb(err);
+    cb(null, session);
+  });
+};
+Scratch.CloudSession.prototype._connect = function(cb) {
   var self = this;
   this.connection = net.connect({
     host: CLOUD,

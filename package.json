@@ -12,5 +12,8 @@
   "bugs": {
     "url": "https://github.com/trumank/scratch-api/issues"
   },
-  "homepage": "https://github.com/trumank/scratch-api"
+  "homepage": "https://github.com/trumank/scratch-api",
+  "dependencies": {
+    "prompt": "^0.2.14"
+  }
 }
