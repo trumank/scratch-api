@@ -57,7 +57,7 @@ Scratch.createUserSession(username, password, function(err, user) {
 ## Scratch
 
 <a name="createUserSession"></a>
-### Scratch.createUserSession(username, password, callback)
+### static createUserSession(username, password, callback)
 
 Created a new Scratch session by signing in with the given username and password.
 
@@ -66,7 +66,7 @@ Created a new Scratch session by signing in with the given username and password
 * `callback(err, user)` - A callback that is called with the resulting user or an error if one occurs.
 
 <a name="getProject"></a>
-### Scratch.getProject(projectId, callback)
+### static getProject(projectId, callback)
 
 Retrieves a JSON object of the given Scratch project. Equivalent to Scratch.UserSession.getProject but does not require being signed in.
 
@@ -76,7 +76,7 @@ Retrieves a JSON object of the given Scratch project. Equivalent to Scratch.User
 ## UserSession
 
 <a name="UserSession.getProject"></a>
-### Scratch.UserSession.getProject(projectId, callback)
+### getProject(projectId, callback)
 
 Retrieves a JSON object of the given Scratch project.
 
@@ -84,7 +84,7 @@ Retrieves a JSON object of the given Scratch project.
 * `callback(err, project)` - A callback that is called with the resulting project or an error if one occurs.
 
 <a name="UserSession.setProject"></a>
-### Scratch.UserSession.setProject(projectId, payload, callback)
+### setProject(projectId, payload, callback)
 
 Uploads the given payload object or string to the project with the given ID. The user must own the given project or the request will fail.
 
@@ -93,14 +93,14 @@ Uploads the given payload object or string to the project with the given ID. The
 * `callback(err)` - A callback that is called when it finishes and or an error occurs.
 
 <a name="UserSession.getBackpack"></a>
-### Scratch.UserSession.getBackpack(callback)
+### getBackpack(callback)
 
 Retrieves the signed in user's backpack as a JSON object.
 
 * `callback(err, payload)` - A callback that is called with the returned backpack object or an error if one occurs.
 
 <a name="UserSession.setBackpack"></a>
-### Scratch.UserSession.setBackpack(payload, callback)
+### setBackpack(payload, callback)
 
 Uploads the given payload to the user's backpack.
 
@@ -108,7 +108,7 @@ Uploads the given payload to the user's backpack.
 * `callback(err)` - A callback that is called when the request finishes or an error occurs.
 
 <a name="UserSession.cloud"></a>
-### Scratch.UserSession.cloud(projectId, callback)
+### cloud(projectId, callback)
 
 Connects to a cloud variable session for the given project.
 
@@ -118,26 +118,26 @@ Connects to a cloud variable session for the given project.
 ## Scratch.CloudSession
 
 <a name="CloudSession.connect"></a>
-### Scratch.CloudSession.connect(callback)
+### connect(callback)
 
 Used to start a newly created CloudSession.
 
 * `callback` - A callback that is called when a connection is made or an error occurs.
 
 <a name="CloudSession.end"></a>
-### Scratch.CloudSession.end()
+### end()
 
 Used to disconnect from the server and end the cloud session.
 
 <a name="CloudSession.get"></a>
-### Scratch.CloudSession.get(name)
+### get(name)
 
 Returns the value of a cloud variable or undefined if it does not exist.
 
 * `name` - The variable name including the cloud (☁) symbol.
 
 <a name="CloudSession.set"></a>
-### Scratch.CloudSession.set(name, value)
+### set(name, value)
 
 Sets the variable with the given name to the given value.
 
@@ -145,12 +145,12 @@ Sets the variable with the given name to the given value.
 * `value` - A new value.
 
 <a name="CloudSession.variables"></a>
-### Scratch.CloudSession.variables
+### variables
 
 An object used as a hash table for all cloud variables. Variables can both read set directly via this object or through the corresponding [`get`](#CloudSession.get) and [`set`](#CloudSession.set) methods.
 
 <a name="CloudSession._set"></a>
-### Scratch.CloudSession Event: 'set'
+### Event: 'set'
 
 Emitted when a cloud variable is changed.
 
@@ -158,6 +158,6 @@ Emitted when a cloud variable is changed.
 * `value` - The variables new value.
 
 <a name="CloudSession._end"></a>
-### Scratch.CloudSession Event: 'end'
+### Event: 'end'
 
 Emitted when the server closes the connection (should never happen unless the client breaks).
