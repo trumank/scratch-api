@@ -17,7 +17,6 @@ git clone https://github.com/trumank/scratch-api.git
 ## Examples
 
 Sets the user's backpack to a single script.
-
 ```javascript
 var Scratch = require('scratch-api');
 Scratch.UserSession.load(function(err, user) {
@@ -30,6 +29,19 @@ Scratch.UserSession.load(function(err, user) {
   function(err, res) {
     if (err) return console.error(err);
     console.log('Backpack set');
+  });
+});
+```
+
+Prints all of the cloud variables for the given project.
+```javascript
+var Scratch = require('scratch-api');
+
+Scratch.UserSession.load(function(err, user) {
+  user.cloudSession(<project>, function(err, cloud) {
+    cloud.on('set', function(name, value) {
+      console.log(name, value);
+    });
   });
 });
 ```
