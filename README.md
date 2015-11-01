@@ -16,9 +16,11 @@ git clone https://github.com/trumank/scratch-api.git
 
 ## Examples
 
+Sets the user's backpack to a single script.
+
 ```javascript
 var Scratch = require('scratch-api');
-Scratch.createUserSession(username, password, function(err, user) {
+Scratch.UserSession.load(function(err, user) {
   if (err) return console.error(err);
   user.setBackpack([{
     type: 'script',
