@@ -152,7 +152,7 @@ Comments on a project, profile, or studio.
 
 * `options` - A JSON object containing options.
   * `project`, `user`, or `studio`: The function checks (in that order) for these values. The user must be a username to post to, and all others must be ids.
-  * `replyto`: The comment to reply to. Optional.
+  * `replyto`: The comment id  to reply to. Optional.
   * `content`: The text of the comment to post.
 * `callback(err)`
 
