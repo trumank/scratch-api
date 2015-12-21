@@ -191,6 +191,56 @@ Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
     }
   });
 };
+Scratch.UserSession.prototype.comment = function(options, cb) {
+  if (options['project']) {
+    request({
+      hostname: SERVER,
+      path: '/site-api/comments/project/' + options['project'] + '/add/',
+      method: 'POST',
+      body: JSON.stringify({
+        "content": options['content'],
+        "parent_id": options['replyto'] || "",
+        "commentee_id": "",
+      }),
+      sessionId: this.sessionId
+    }, function(err, body, response) {
+      if (err) return cb(err);
+      return cb(null);
+    });
+  } else if (options['user']) {
+    request({
+      hostname: SERVER,
+      path: '/site-api/comments/user/' + options['user'] + '/add/',
+      method: 'POST',
+      body: JSON.stringify({
+        "content": options['content'],
+        "parent_id": options['replyto'] || "",
+        "commentee_id": ""
+      }),
+      sessionId: this.sessionId
+    }, function(err, body, response) {
+      if(err) return cb(err);
+      return cb(null);
+    });
+  } else if (options['studio']) {
+    request({
+      hostname: SERVER,
+      path: '/site-api/comments/gallery/' + options['studio'] + '/add/',
+      method: 'POST',
+      body: JSON.stringify({
+        "content": options['content'],
+        "parent_id": options['replyto'],
+        "commentee_id": "",
+      }),
+      sessionId: this.sessionId
+    }, function(err, body, response) {
+      if(err) return cb(err);
+      return cb(null);
+    });
+  }
+};
+
+    
 Scratch.UserSession.prototype.cloudSession = function(projectId, cb) {
   var self = this;
   request({
