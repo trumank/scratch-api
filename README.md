@@ -60,7 +60,7 @@ Scratch.UserSession.load(function(err, user) {
 * [`setProject`](#UserSession.setProject)
 * [`getBackpack`](#UserSession.getBackpack)
 * [`setBackpack`](#UserSession.setBackpack)
-* [`comment`](#UserSession.comment)
+* [`addComment`](#UserSession.addComment)
 * [`cloudSession`](#UserSession.cloudSession)
 
 ### Scratch.CloudSession
@@ -145,8 +145,8 @@ Uploads the given payload to the user's backpack.
 * `payload` - A JSON object or a string to be uploaded.
 * `callback(err)`
 
-<a name="UserSession.comment"></a>
-### comment(options, callback)
+<a name="UserSession.addComment"></a>
+### addComment(options, callback)
 
 Comments on a project, profile, or studio.
 

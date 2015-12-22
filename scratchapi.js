@@ -191,56 +191,30 @@ Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
     }
   });
 };
-Scratch.UserSession.prototype.comment = function(options, cb) {
+Scratch.UserSession.prototype.addComment = function(options, cb) {
+  var type, id;
   if (options['project']) {
-    request({
-      hostname: SERVER,
-      path: '/site-api/comments/project/' + options['project'] + '/add/',
-      method: 'POST',
-      body: JSON.stringify({
-        "content": options['content'],
-        "parent_id": options['replyto'] || "",
-        "commentee_id": "",
-      }),
-      sessionId: this.sessionId
-    }, function(err, body, response) {
-      if (err) return cb(err);
-      return cb(null);
-    });
+    type = 'project';
+    id = options['project'];
   } else if (options['user']) {
-    request({
-      hostname: SERVER,
-      path: '/site-api/comments/user/' + options['user'] + '/add/',
-      method: 'POST',
-      body: JSON.stringify({
-        "content": options['content'],
-        "parent_id": options['replyto'] || "",
-        "commentee_id": ""
-      }),
-      sessionId: this.sessionId
-    }, function(err, body, response) {
-      if(err) return cb(err);
-      return cb(null);
-    });
+    type = 'user';
+    id = options['user'];
   } else if (options['studio']) {
-    request({
-      hostname: SERVER,
-      path: '/site-api/comments/gallery/' + options['studio'] + '/add/',
-      method: 'POST',
-      body: JSON.stringify({
-        "content": options['content'],
-        "parent_id": options['replyto'],
-        "commentee_id": "",
-      }),
-      sessionId: this.sessionId
-    }, function(err, body, response) {
-      if(err) return cb(err);
-      return cb(null);
-    });
+    type = 'gallery';
+    id = options['studio'];
   }
+  request({
+    hostname: SERVER,
+    path: '/site-api/comments/' + type + '/' + id + '/add/',
+    method: 'POST',
+    body: JSON.stringify({
+      content: options['content'],
+      parent_id: options['replyto'] || '',
+      commentee_id: '',
+    }),
+    sessionId: this.sessionId
+  }, cb);
 };
-
-    
 Scratch.UserSession.prototype.cloudSession = function(projectId, cb) {
   var self = this;
   request({
