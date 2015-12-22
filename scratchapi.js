@@ -209,8 +209,8 @@ Scratch.UserSession.prototype.addComment = function(options, cb) {
     method: 'POST',
     body: JSON.stringify({
       content: options['content'],
-      parent_id: options['replyto'] || '',
-      commentee_id: '',
+      parent_id: options['parent'] || '',
+      commentee_id: options['replyto'] || '',
     }),
     sessionId: this.sessionId
   }, cb);
