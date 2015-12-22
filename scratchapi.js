@@ -191,6 +191,30 @@ Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
     }
   });
 };
+Scratch.UserSession.prototype.addComment = function(options, cb) {
+  var type, id;
+  if (options['project']) {
+    type = 'project';
+    id = options['project'];
+  } else if (options['user']) {
+    type = 'user';
+    id = options['user'];
+  } else if (options['studio']) {
+    type = 'gallery';
+    id = options['studio'];
+  }
+  request({
+    hostname: SERVER,
+    path: '/site-api/comments/' + type + '/' + id + '/add/',
+    method: 'POST',
+    body: JSON.stringify({
+      content: options['content'],
+      parent_id: options['replyto'] || '',
+      commentee_id: '',
+    }),
+    sessionId: this.sessionId
+  }, cb);
+};
 Scratch.UserSession.prototype.cloudSession = function(projectId, cb) {
   var self = this;
   request({

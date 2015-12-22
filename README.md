@@ -60,6 +60,7 @@ Scratch.UserSession.load(function(err, user) {
 * [`setProject`](#UserSession.setProject)
 * [`getBackpack`](#UserSession.getBackpack)
 * [`setBackpack`](#UserSession.setBackpack)
+* [`addComment`](#UserSession.addComment)
 * [`cloudSession`](#UserSession.cloudSession)
 
 ### Scratch.CloudSession
@@ -142,6 +143,17 @@ Retrieves the signed in user's backpack as a JSON object.
 Uploads the given payload to the user's backpack.
 
 * `payload` - A JSON object or a string to be uploaded.
+* `callback(err)`
+
+<a name="UserSession.addComment"></a>
+### addComment(options, callback)
+
+Comments on a project, profile, or studio.
+
+* `options` - A JSON object containing options.
+  * `project`, `user`, or `studio`: The function checks (in that order) for these values. The user must be a username to post to, and all others must be ids.
+  * `replyto`: The comment id  to reply to. Optional.
+  * `content`: The text of the comment to post.
 * `callback(err)`
 
 <a name="UserSession.cloudSession"></a>
