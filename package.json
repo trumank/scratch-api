@@ -1,6 +1,6 @@
 {
   "name": "scratch-api",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "An API to interact with the Scratch 2.0 website",
   "main": "scratchapi.js",
   "repository": {
