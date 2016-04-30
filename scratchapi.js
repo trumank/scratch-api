@@ -223,7 +223,7 @@ Scratch.UserSession.prototype.cloudSession = function(projectId, cb) {
     sessionId: this.sessionId
   }, function(err, body, response) {
     if (err) return cb(err);
-    Scratch.CloudSession._create(self, projectId, body.substr(1495, 36), cb);
+    Scratch.CloudSession._create(self, projectId, /data: {token: "(.*)"},/.exec(body)[1], cb);
   });
 };
 
