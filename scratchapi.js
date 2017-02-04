@@ -8,8 +8,9 @@ var fs = require('fs');
 var SERVER = 'scratch.mit.edu';
 var PROJECTS_SERVER = 'projects.scratch.mit.edu';
 var CDN_SERVER = 'cdn.scratch.mit.edu';
-var CLOUD = 'cloud.scratch.mit.edu';
-var CLOUD_PORT = 531;
+var CLOUD_TCP = 'cloud.scratch.mit.edu';
+var CLOUD_TCP_PORT = 531;
+var CLOUD_POLL_INTERVAL = 1500;
 
 var SESSION_FILE = '.scratchSession';
 
@@ -24,7 +25,7 @@ function request(options, cb) {
       headers[name] = options.headers[name];
     }
   }
-  if (options.body) headers['Content-Length'] = options.body.length;
+  if (options.body) headers['Content-Length'] = Buffer.byteLength(options.body);
   if (options.sessionId) headers['Cookie'] += 'scratchsessionsid=' + options.sessionId + ';';
   var req = https.request({
     hostname: options.hostname || SERVER,
@@ -235,6 +236,8 @@ Scratch.CloudSession = function(user, projectId, cloudId) {
   md5.update(this.cloudId);
   this.hash = md5.digest('hex');
   this.connection = null;
+  this.ended = false;
+  this.attemptedPackets = [];
   this.variables = Object.create(null);
   this._variables = Object.create(null);
 };
@@ -249,8 +252,8 @@ Scratch.CloudSession._create = function(user, projectId, cloudId, cb) {
 Scratch.CloudSession.prototype._connect = function(cb) {
   var self = this;
   this.connection = net.connect({
-    host: CLOUD,
-    port: CLOUD_PORT
+    host: CLOUD_TCP,
+    port: CLOUD_TCP_PORT
   }, function() {
     self._sendHandshake();
     cb();
@@ -258,11 +261,16 @@ Scratch.CloudSession.prototype._connect = function(cb) {
   this.connection.setEncoding('utf8');
 
   this.connection.on('end', function() {
-    self.emit('end');
+    self.connection = null;
+    self.attemptedPackets.forEach(function(packet) {
+      self._sendPacket(packet);
+    });
+    self._pollVariables();
   });
 
   var stream = '';
   this.connection.on('data', function(chunk) {
+    self.attemptedPackets = [];
     stream += chunk;
     var packets = stream.split('\n');
     for(var i = 0; i < packets.length - 1; i++) {
@@ -280,7 +288,10 @@ Scratch.CloudSession.prototype._connect = function(cb) {
   });
 };
 Scratch.CloudSession.prototype.end = function() {
-  this.connection.end();
+  if (this.connection) {
+    this.connection.end();
+  }
+  this.ended = true;
 };
 Scratch.CloudSession.prototype.get = function(name) {
   return this._variables[name];
@@ -322,11 +333,49 @@ Scratch.CloudSession.prototype._send = function(method, options) {
   for (var name in options) {
     object[name] = options[name];
   }
-  this.connection.write(JSON.stringify(object) + '\n');
+
+  this._sendPacket(JSON.stringify(object));
+};
+Scratch.CloudSession.prototype._sendPacket = function(data) {
+  if (this.connection) {
+    this.attemptedPackets.push(data);
+    this.connection.write(data + '\n');
+  } else {
+    request({
+      path: '/varserver',
+      method: 'POST',
+      sessionId: this.sessionId,
+      body: data
+    }, function(err, body, response) {
+      if (err) console.warn('Error', err);
+    });
+  }
 
   var md5 = crypto.createHash('md5');
   md5.update(this.hash);
   this.hash = md5.digest('hex');
+};
+Scratch.CloudSession.prototype._pollVariables = function() {
+  var self = this;
+  request({
+    path: '/varserver/' + this.projectId,
+    method: 'GET',
+    sessionId: this.sessionId,
+  }, function(err, body, response) {
+    if (response && response.statusCode === 200) {
+      var variables = JSON.parse(body).variables;
+      for (var variable of variables) {
+        if (!({}).hasOwnProperty.call(self.variables, variable.name)) {
+          self._addVariable(variable.name, variable.value);
+        }
+        if ('' + self._variables[variable.name] !== '' + variable.value) {
+          self.set(variable.name, variable.value);
+        }
+        self.emit('set', variable.name, variable.value);
+      }
+    }
+    if (!self.ended) setTimeout(self._pollVariables.bind(self), CLOUD_POLL_INTERVAL);
+  });
 };
 Scratch.CloudSession.prototype._addVariable = function(name, value) {
   var self = this;
