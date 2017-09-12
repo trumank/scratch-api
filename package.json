@@ -14,6 +14,7 @@
   },
   "homepage": "https://github.com/trumank/scratch-api",
   "dependencies": {
-    "prompt": "^0.2.14"
+    "prompt": "^0.2.14",
+    "ws": "^3.1.0"
   }
 }
