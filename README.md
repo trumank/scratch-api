@@ -48,7 +48,7 @@ Scratch.UserSession.load(function(err, user) {
 
 ## See Also
 
-This scratch-api module is setup to be easily added too and extended. If you need too make certain requests not present it should be easy to add them. The [Scratch Wiki](http://wiki.scratch.mit.edu/wiki/Scratch_API_(2.0)) has some pretty extensive documentation.
+This scratch-api module is setup to be easily added too and extended. If you need to make certain requests that are not present it should be easy to add them. The [Scratch Wiki](http://wiki.scratch.mit.edu/wiki/Scratch_API_(2.0)) has some pretty extensive documentation.
 
 If you are feeling Pythonic today, check out Dylan Beswick's very similar [module for Python](https://github.com/Dylan5797/scratchapi).
 
