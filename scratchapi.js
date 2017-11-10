@@ -238,7 +238,7 @@ Scratch.CloudSession._create = function(user, projectId, cb) {
 Scratch.CloudSession.prototype._connect = function(cb) {
   var self = this;
 
-  this.connection = new WebSocket('ws://' + CLOUD_SERVER + '/', [], {
+  this.connection = new WebSocket('wss://' + CLOUD_SERVER + '/', [], {
       headers: {
         Cookie: 'scratchsessionsid=' + this.user.sessionId + ';'
       }
