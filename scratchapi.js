@@ -240,7 +240,8 @@ Scratch.CloudSession.prototype._connect = function(cb) {
 
   this.connection = new WebSocket('wss://' + CLOUD_SERVER + '/', [], {
       headers: {
-        Cookie: 'scratchsessionsid=' + this.user.sessionId + ';'
+        cookie: 'scratchsessionsid=' + this.user.sessionId + ';',
+        origin: 'https://scratch.mit.edu'
       }
     }
   );
