@@ -177,7 +177,7 @@ Scratch.UserSession.prototype.getBackpack = function(cb) {
 Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
   request({
-    hostname: CDN_SERVER,
+    hostname: SERVER,
     path: '/internalapi/backpack/' + this.username + '/set/',
     method: 'POST',
     body: payload,
