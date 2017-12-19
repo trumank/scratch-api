@@ -25,7 +25,7 @@ function request(options, cb) {
     }
   }
   if (options.body) headers['Content-Length'] = Buffer.byteLength(options.body);
-  if (options.sessionId) headers['Cookie'] += 'scratchsessionsid=' + options.sessionId + ';';
+  if (options.sessionId) headers.Cookie += 'scratchsessionsid=' + options.sessionId + ';';
   var req = https.request({
     hostname: options.hostname || SERVER,
     port: 443,
@@ -193,24 +193,24 @@ Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
 };
 Scratch.UserSession.prototype.addComment = function(options, cb) {
   var type, id;
-  if (options['project']) {
+  if (options.project) {
     type = 'project';
-    id = options['project'];
-  } else if (options['user']) {
+    id = options.project;
+  } else if (options.user) {
     type = 'user';
-    id = options['user'];
-  } else if (options['studio']) {
+    id = options.user;
+  } else if (options.studio) {
     type = 'gallery';
-    id = options['studio'];
+    id = options.studio;
   }
   request({
     hostname: SERVER,
     path: '/site-api/comments/' + type + '/' + id + '/add/',
     method: 'POST',
     body: JSON.stringify({
-      content: options['content'],
-      parent_id: options['parent'] || '',
-      commentee_id: options['replyto'] || '',
+      content: options.content,
+      parent_id: options.parent || '',
+      commentee_id: options.replyto || '',
     }),
     sessionId: this.sessionId
   }, cb);
