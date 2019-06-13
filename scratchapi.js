@@ -7,9 +7,10 @@ var fs = require('fs');
 var WebSocket = require('ws');
 
 var SERVER = 'scratch.mit.edu';
-var PROJECTS_SERVER = 'projects.scratch.mit.edu';
-var CDN_SERVER = 'cdn.scratch.mit.edu';
-var CLOUD_SERVER = 'clouddata.scratch.mit.edu';
+var PROJECTS_SERVER = 'projects.' + SERVER;
+var CDN_SERVER = 'cdn.' + SERVER ;
+var CLOUD_SERVER = 'clouddata.' + SERVER;
+var API_SERVER = 'api.' + SERVER;
 
 var SESSION_FILE = '.scratchSession';
 
@@ -142,6 +143,28 @@ Scratch.UserSession.prototype.verify = function(cb) {
   });
 };
 Scratch.UserSession.prototype.getProject = Scratch.getProject;
+
+Scratch.UserSession.prototype.getProjects = function ( cb )  {
+  const username = this.username;
+  //console.log("this Scratch.UserSession:");
+  //console.log(this);
+  //console.log("this.sessionId:");
+  //console.log(this.sessionId);
+  request({
+    hostname: API_SERVER,
+    path: '/users/' + username + '/projects',
+    method: 'GET',
+    sessionId: this.sessionId
+  }, function(err, body, response) {
+    if (err) return cb(err);
+    try {
+      cb(null, JSON.parse(body));
+    } catch (e) {
+      cb(e);
+    }
+  });
+};
+
 Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
   request({
@@ -318,6 +341,7 @@ Scratch.CloudSession.prototype._send = function(method, options) {
     project_id: this.projectId,
     method: method
   };
+  console.log(object)
   for (var name in options) {
     object[name] = options[name];
   }
