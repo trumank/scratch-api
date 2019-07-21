@@ -43,6 +43,17 @@ function request(options, cb) {
   req.end();
 }
 
+function requestjson (options, cb ){
+  request( options , function(err, body, response) {
+    if (err) return cb(err);
+    try {
+      cb(null, JSON.parse(body));
+    } catch (e) {
+      cb(e);
+    }
+  })
+}
+
 function parseCookie(cookie) {
   var cookies = {};
   var each = cookie.split(';');
@@ -60,20 +71,12 @@ function parseCookie(cookie) {
 var Scratch = {};
 
 Scratch.getProject = function(projectId, cb) {
-  request({
+  requestjson({
     hostname: PROJECTS_SERVER,
     path: '/internalapi/project/' + projectId + '/get/',
-    method: 'GET'
-  }, function(err, body, response) {
-    if (err) return cb(err);
-    try {
-      cb(null, JSON.parse(body));
-    } catch (e) {
-      cb(e);
-    }
-  });
+    method: 'GET',
+  }, cb);
 };
-
 Scratch.UserSession = function(username, id, sessionId) {
   this.username = username;
   this.id = id;
@@ -146,73 +149,82 @@ Scratch.UserSession.prototype.getProject = Scratch.getProject;
 
 Scratch.UserSession.prototype.getProjects = function ( cb )  {
   const username = this.username;
-  //console.log("this Scratch.UserSession:");
-  //console.log(this);
-  //console.log("this.sessionId:");
-  //console.log(this.sessionId);
-  request({
+  requestjson({
     hostname: API_SERVER,
     path: '/users/' + username + '/projects',
     method: 'GET',
-    sessionId: this.sessionId
-  }, function(err, body, response) {
-    if (err) return cb(err);
-    try {
-      cb(null, JSON.parse(body));
-    } catch (e) {
-      cb(e);
+    json: true
+  }, cb);
+};
+
+/*
+Scratch.UserSession.prototype.getRequestProcessor = function ( options ){
+
+  return function(cb) {
+    if(!options.sessionId){
+      options.sessionId = this.sessionId;
+    };
+    if(!options.hostname){
+      options.hostname = SERVER;
     }
-  });
+    if(!options.method){
+      options.method = 'GET';
+    }
+    
+    request(options, function(err, body, response) {
+      if (err) return cb(err);
+      try {
+        cb(null, JSON.parse(body));
+      } catch (e) {
+        cb(e);
+      }
+    });
+  };
+}
+
+
+Scratch.UserSession.prototype.getAllProjects = Scratch.UserSession.prototype.getRequestProcessor( { 
+  path: '/site-api/projects/all/' 
+});
+*/
+
+Scratch.UserSession.prototype.getAllProjects = function ( cb )  {
+  requestjson({
+    hostname: SERVER,
+    path: '/site-api/projects/all/',
+    method: 'GET',
+    sessionId: this.sessionId
+  },cb);
 };
 
 Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
-  request({
+  requestjson({
     hostname: PROJECTS_SERVER,
     path: '/internalapi/project/' + projectId + '/set/',
     method: 'POST',
     body: payload,
-    sessionId: this.sessionId
-  }, function(err, body, response) {
-    if (err) return cb(err);
-    try {
-      cb(null, JSON.parse(body));
-    } catch (e) {
-      cb(e);
-    }
-  });
+    sessionId: this.sessionId,
+  }, cb);
 };
 Scratch.UserSession.prototype.getBackpack = function(cb) {
-  request({
+  requestjson({
     hostname: SERVER,
     path: '/internalapi/backpack/' + this.username + '/get/',
     method: 'GET',
-    sessionId: this.sessionId
-  }, function(err, body, response) {
-    if (err) return cb(err);
-    try {
-      cb(null, JSON.parse(body));
-    } catch (e) {
-      cb(e);
-    }
-  });
+    sessionId: this.sessionId, 
+    json: true
+  }, cb);
 };
 Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
-  request({
-    hostname: SERVER,
+  requestjson({
+    hostname: CDN_SERVER,
     path: '/internalapi/backpack/' + this.username + '/set/',
     method: 'POST',
     body: payload,
     sessionId: this.sessionId
-  }, function(err, body, response) {
-    if (err) return cb(err);
-    try {
-      cb(null, JSON.parse(body));
-    } catch (e) {
-      cb(e);
-    }
-  });
+  },cb);
 };
 Scratch.UserSession.prototype.addComment = function(options, cb) {
   var type, id;
