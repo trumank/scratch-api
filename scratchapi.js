@@ -73,7 +73,7 @@ var Scratch = {};
 Scratch.getProject = function(projectId, cb) {
   requestjson({
     hostname: PROJECTS_SERVER,
-    path: '/internalapi/project/' + projectId + '/get/',
+    path: '/' + projectId ,
     method: 'GET',
   }, cb);
 };
@@ -156,38 +156,6 @@ Scratch.UserSession.prototype.getProjects = function ( cb )  {
     json: true
   }, cb);
 };
-
-/*
-Scratch.UserSession.prototype.getRequestProcessor = function ( options ){
-
-  return function(cb) {
-    if(!options.sessionId){
-      options.sessionId = this.sessionId;
-    };
-    if(!options.hostname){
-      options.hostname = SERVER;
-    }
-    if(!options.method){
-      options.method = 'GET';
-    }
-    
-    request(options, function(err, body, response) {
-      if (err) return cb(err);
-      try {
-        cb(null, JSON.parse(body));
-      } catch (e) {
-        cb(e);
-      }
-    });
-  };
-}
-
-
-Scratch.UserSession.prototype.getAllProjects = Scratch.UserSession.prototype.getRequestProcessor( { 
-  path: '/site-api/projects/all/' 
-});
-*/
-
 Scratch.UserSession.prototype.getAllProjects = function ( cb )  {
   requestjson({
     hostname: SERVER,
@@ -196,7 +164,6 @@ Scratch.UserSession.prototype.getAllProjects = function ( cb )  {
     sessionId: this.sessionId
   },cb);
 };
-
 Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
   requestjson({
@@ -353,7 +320,6 @@ Scratch.CloudSession.prototype._send = function(method, options) {
     project_id: this.projectId,
     method: method
   };
-  console.log(object)
   for (var name in options) {
     object[name] = options[name];
   }
