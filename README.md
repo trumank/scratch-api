@@ -56,6 +56,7 @@ If you are feeling Pythonic today, check out Dylan Beswick's very similar [modul
 
 ### Scratch
 * [`getProject`](#getProject)
+* [`getProjects`](#getProjects)
 
 ### Scratch.UserSession
 * [`static create`](#UserSession.create)
@@ -64,6 +65,8 @@ If you are feeling Pythonic today, check out Dylan Beswick's very similar [modul
 * [`verify`](#UserSession.verify)
 * [`getProject`](#UserSession.getProject)
 * [`setProject`](#UserSession.setProject)
+* [`getProjects`](#UserSession.getProjects)
+* [`getAllProjects`](#UserSession.getAllProjects)
 * [`getBackpack`](#UserSession.getBackpack)
 * [`setBackpack`](#UserSession.setBackpack)
 * [`addComment`](#UserSession.addComment)
