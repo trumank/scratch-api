@@ -8,7 +8,7 @@ var WebSocket = require('ws');
 
 var SERVER = 'scratch.mit.edu';
 var PROJECTS_SERVER = 'projects.scratch.mit.edu';
-var CDN_SERVER = 'cdn.scratch.mit.edu' ;
+var CDN_SERVER = 'cdn.scratch.mit.edu';
 var CLOUD_SERVER = 'clouddata.scratch.mit.edu';
 var API_SERVER = 'api.scratch.mit.edu';
 
@@ -43,15 +43,15 @@ function request(options, cb) {
   req.end();
 }
 
-function requestJSON (options, cb ){
-  request( options , function(err, body, response) {
+function requestJSON(options, cb) {
+  request(options, function(err, body, response) {
     if (err) return cb(err);
     try {
       cb(null, JSON.parse(body));
     } catch (e) {
       cb(e);
     }
-  })
+  });
 }
 
 function parseCookie(cookie) {
@@ -73,7 +73,7 @@ var Scratch = {};
 Scratch.getProject = function(projectId, cb) {
   requestJSON({
     hostname: PROJECTS_SERVER,
-    path: '/' + projectId ,
+    path: '/' + projectId,
     method: 'GET',
   }, cb);
 };
@@ -147,22 +147,21 @@ Scratch.UserSession.prototype.verify = function(cb) {
 };
 Scratch.UserSession.prototype.getProject = Scratch.getProject;
 
-Scratch.UserSession.prototype.getProjects = function ( cb )  {
+Scratch.UserSession.prototype.getProjects = function(cb) {
   const username = this.username;
   requestJSON({
     hostname: API_SERVER,
     path: '/users/' + username + '/projects',
-    method: 'GET',
-    json: true
+    method: 'GET'
   }, cb);
 };
-Scratch.UserSession.prototype.getAllProjects = function ( cb )  {
+Scratch.UserSession.prototype.getAllProjects = function(cb) {
   requestJSON({
     hostname: SERVER,
     path: '/site-api/projects/all/',
     method: 'GET',
     sessionId: this.sessionId
-  },cb);
+  }, cb);
 };
 Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
@@ -171,7 +170,7 @@ Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
     path: '/internalapi/project/' + projectId + '/set/',
     method: 'POST',
     body: payload,
-    sessionId: this.sessionId,
+    sessionId: this.sessionId
   }, cb);
 };
 Scratch.UserSession.prototype.getBackpack = function(cb) {
@@ -179,19 +178,18 @@ Scratch.UserSession.prototype.getBackpack = function(cb) {
     hostname: SERVER,
     path: '/internalapi/backpack/' + this.username + '/get/',
     method: 'GET',
-    sessionId: this.sessionId, 
-    json: true
+    sessionId: this.sessionId
   }, cb);
 };
 Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
   requestJSON({
-    hostname: CDN_SERVER,
+    hostname: SERVER,
     path: '/internalapi/backpack/' + this.username + '/set/',
     method: 'POST',
     body: payload,
     sessionId: this.sessionId
-  },cb);
+  }, cb);
 };
 Scratch.UserSession.prototype.addComment = function(options, cb) {
   var type, id;
