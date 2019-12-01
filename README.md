@@ -82,10 +82,18 @@ If you are feeling Pythonic today, check out Dylan Beswick's very similar [modul
 <a name="getProject"></a>
 ### static getProject(projectId, callback)
 
-Retrieves a JSON object of the given Scratch project. Equivalent to Scratch.UserSession.getProject but does not require being signed in.
+Retrieves a JSON object of the given Scratch project.
 
 * `projectId` - The project's ID.
 * `callback(err, project)`
+
+<a name="getProjects"></a>
+### static getProjects(username, callback)
+
+Retrieves a list of all public projects belonging to given user.
+
+* `username` - Username of owner
+* `callback(err, projects)`
 
 ## UserSession
 
@@ -120,12 +128,7 @@ Verifies that the user session is fresh and is ready to be used.
 * `callback(err, valid)`
 
 <a name="UserSession.getProject"></a>
-### getProject(projectId, callback)
-
-Retrieves a JSON object of the given Scratch project.
-
-* `projectId` - The project's ID.
-* `callback(err, project)`
+### getProject(projectId, callback) - alias <a href="#getProject">getProject</a>
 
 <a name="UserSession.setProject"></a>
 ### setProject(projectId, payload, callback)
@@ -135,6 +138,18 @@ Uploads the given payload object or string to the project with the given ID. The
 * `projectId` - The project's ID.
 * `payload` - A JSON object or string. If it is an object, it will be stringified before sent.
 * `callback(err)`
+
+<a name="UserSession.getProjects"></a>
+### getProjects(callback) - alias <a href="#getProjects">getProjects</a>
+
+<a name="UserSession.getAllProjects"></a>
+### getAllProject(callback)
+
+Gets a list of all projects (shared and unshared) belonging to the user.
+
+Note: This does not share the same format as `getProjects` as it uses the internal API.
+
+* `callback(err, projects)`
 
 <a name="UserSession.getBackpack"></a>
 ### getBackpack(callback)
