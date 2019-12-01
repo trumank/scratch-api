@@ -77,6 +77,13 @@ Scratch.getProject = function(projectId, cb) {
     method: 'GET',
   }, cb);
 };
+Scratch.getProjects = function(username, cb) {
+  requestJSON({
+    hostname: API_SERVER,
+    path: '/users/' + username + '/projects',
+    method: 'GET'
+  }, cb);
+};
 Scratch.UserSession = function(username, id, sessionId) {
   this.username = username;
   this.id = id;
@@ -146,15 +153,10 @@ Scratch.UserSession.prototype.verify = function(cb) {
   });
 };
 Scratch.UserSession.prototype.getProject = Scratch.getProject;
-
 Scratch.UserSession.prototype.getProjects = function(cb) {
-  const username = this.username;
-  requestJSON({
-    hostname: API_SERVER,
-    path: '/users/' + username + '/projects',
-    method: 'GET'
-  }, cb);
+  Scratch.getProjects(this.username, cb);
 };
+
 Scratch.UserSession.prototype.getAllProjects = function(cb) {
   requestJSON({
     hostname: SERVER,
