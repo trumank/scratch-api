@@ -7,10 +7,10 @@ var fs = require('fs');
 var WebSocket = require('ws');
 
 var SERVER = 'scratch.mit.edu';
-var PROJECTS_SERVER = 'projects.' + SERVER;
-var CDN_SERVER = 'cdn.' + SERVER ;
-var CLOUD_SERVER = 'clouddata.' + SERVER;
-var API_SERVER = 'api.' + SERVER;
+var PROJECTS_SERVER = 'projects.scratch.mit.edu';
+var CDN_SERVER = 'cdn.scratch.mit.edu' ;
+var CLOUD_SERVER = 'clouddata.scratch.mit.edu';
+var API_SERVER = 'api.scratch.mit.edu';
 
 var SESSION_FILE = '.scratchSession';
 
@@ -43,7 +43,7 @@ function request(options, cb) {
   req.end();
 }
 
-function requestjson (options, cb ){
+function requestJSON (options, cb ){
   request( options , function(err, body, response) {
     if (err) return cb(err);
     try {
@@ -71,7 +71,7 @@ function parseCookie(cookie) {
 var Scratch = {};
 
 Scratch.getProject = function(projectId, cb) {
-  requestjson({
+  requestJSON({
     hostname: PROJECTS_SERVER,
     path: '/' + projectId ,
     method: 'GET',
@@ -149,7 +149,7 @@ Scratch.UserSession.prototype.getProject = Scratch.getProject;
 
 Scratch.UserSession.prototype.getProjects = function ( cb )  {
   const username = this.username;
-  requestjson({
+  requestJSON({
     hostname: API_SERVER,
     path: '/users/' + username + '/projects',
     method: 'GET',
@@ -157,7 +157,7 @@ Scratch.UserSession.prototype.getProjects = function ( cb )  {
   }, cb);
 };
 Scratch.UserSession.prototype.getAllProjects = function ( cb )  {
-  requestjson({
+  requestJSON({
     hostname: SERVER,
     path: '/site-api/projects/all/',
     method: 'GET',
@@ -166,7 +166,7 @@ Scratch.UserSession.prototype.getAllProjects = function ( cb )  {
 };
 Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
-  requestjson({
+  requestJSON({
     hostname: PROJECTS_SERVER,
     path: '/internalapi/project/' + projectId + '/set/',
     method: 'POST',
@@ -175,7 +175,7 @@ Scratch.UserSession.prototype.setProject = function(projectId, payload, cb) {
   }, cb);
 };
 Scratch.UserSession.prototype.getBackpack = function(cb) {
-  requestjson({
+  requestJSON({
     hostname: SERVER,
     path: '/internalapi/backpack/' + this.username + '/get/',
     method: 'GET',
@@ -185,7 +185,7 @@ Scratch.UserSession.prototype.getBackpack = function(cb) {
 };
 Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
-  requestjson({
+  requestJSON({
     hostname: CDN_SERVER,
     path: '/internalapi/backpack/' + this.username + '/set/',
     method: 'POST',
