@@ -2,6 +2,7 @@ var https = require('https');
 var net = require('net');
 var util = require('util');
 var events = require('events');
+var $ = require('cheerio');
 var crypto = require('crypto');
 var fs = require('fs');
 var WebSocket = require('ws');
@@ -182,6 +183,19 @@ Scratch.UserSession.prototype.getBackpack = function(cb) {
     method: 'GET',
     sessionId: this.sessionId
   }, cb);
+};
+Scratch.UserSession.prototype.getEmail = function(cb) {
+  request({
+    hostname: SERVER,
+    path: '/accounts/email_change/',
+    method: 'GET',
+    sessionId: this.sessionId
+  }, (err, html) => {
+    if (err !== null) {
+      return cb(err);
+    }
+    cb(null, $(".current-email", html).html())
+  });
 };
 Scratch.UserSession.prototype.setBackpack = function(payload, cb) {
   if (typeof payload !== 'string') payload = JSON.stringify(payload);
