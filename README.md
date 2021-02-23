@@ -69,6 +69,7 @@ If you are feeling Pythonic today, check out Dylan Beswick's very similar [modul
 * [`getAllProjects`](#UserSession.getAllProjects)
 * [`getBackpack`](#UserSession.getBackpack)
 * [`setBackpack`](#UserSession.setBackpack)
+* [`getEmail`](#UserSession.getEmail)
 * [`addComment`](#UserSession.addComment)
 * [`cloudSession`](#UserSession.cloudSession)
 
@@ -168,6 +169,13 @@ Uploads the given payload to the user's backpack.
 
 * `payload` - A JSON object or a string to be uploaded.
 * `callback(err)`
+* 
+<a name="UserSession.getEmail"></a>
+### getEmail(callback)
+
+Get the email of the current user
+
+* `callback(err, payload)`
 
 <a name="UserSession.addComment"></a>
 ### addComment(options, callback)
