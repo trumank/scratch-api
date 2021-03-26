@@ -4,7 +4,7 @@ interface Project {
 
 }
 
-type Commentable = "projet"|"user"|"gallery";
+type Commentable = "project"|"user"|"gallery";
 
 interface CommentOptions {
     type: Commentable;
