@@ -1,7 +1,72 @@
 import EventEmitter from "events";
 
 interface Project {
+    id:               number;
+    title:            string;
+    description:      string;
+    instructions:     string;
+    visibility:       string;
+    public:           boolean;
+    comments_allowed: boolean;
+    is_published:     boolean;
+    author:           ProjectAuthor;
+    image:            string;
+    images:           ProjectImages;
+    history:          ProjectHistory;
+    stats:            ProjectStats;
+    remix:            ProjectRemix;
+}
 
+interface ProjectAuthor {
+    id:          number;
+    username:    string;
+    scratchteam: boolean;
+    history:     AuthorHistory;
+    profile:     Profile;
+}
+
+interface AuthorHistory {
+    joined: Date;
+}
+
+interface Profile {
+    id:     null;
+    images: ProfileImages;
+}
+
+interface ProfileImages {
+    "90x90": string;
+    "60x60": string;
+    "55x55": string;
+    "50x50": string;
+    "32x32": string;
+}
+
+interface ProjectHistory {
+    created:  string;
+    modified: string;
+    shared:   string;
+}
+
+interface ProjectImages {
+    "282x218": string;
+    "216x163": string;
+    "200x200": string;
+    "144x108": string;
+    "135x102": string;
+    "100x80":  string;
+}
+
+interface ProjectRemix {
+    parent: null|number;
+    root:   null|number;
+}
+
+interface ProjectStats {
+    views:     number;
+    loves:     number;
+    favorites: number;
+    remixes:   number;
 }
 
 type Commentable = "project"|"user"|"gallery";
@@ -162,6 +227,12 @@ export class UserSession {
      * @param cb The callback for when the cloud session is created.
      */
     cloudSession(projectId: number, cb: (err: Error|null, cloudSession: CloudSession) => any);
+}
+
+export interface CloudSession extends EventEmitter {
+    on(event: "set", listener: (name: string, value: string) => any): any;
+    off(event: "set", listener: (name: string, value: string) => any): any;
+    emit(event: "set", name: string, value: string): any;
 }
 
 export class CloudSession extends EventEmitter {
