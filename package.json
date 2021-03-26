@@ -3,6 +3,7 @@
   "version": "1.1.11",
   "description": "An API to interact with the Scratch 2.0 website",
   "main": "scratchapi.js",
+  "typings": "./scratchapi.d.ts",
   "repository": {
     "type": "git",
     "url": "git@github.com:trumank/scratch-api.git"
