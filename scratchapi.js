@@ -1,8 +1,6 @@
 var https = require('https');
-var net = require('net');
 var util = require('util');
 var events = require('events');
-var crypto = require('crypto');
 var fs = require('fs');
 var WebSocket = require('ws');
 
